@@ -3,12 +3,9 @@ Simple Xlib application drawing a box in a window.
 */
 
 #include <X11/Xlib.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <iostream>
 
-int main(int argc, char *argv[])
-{
+int main(){
 	Display *display;
 	int screen;
 	Window window;
@@ -35,7 +32,8 @@ int main(int argc, char *argv[])
 	XMapWindow(display, window);
 
 	int i = 0;
-	char buffer[127];
+
+	std::string buffer;
 	
 	XWindowAttributes winInfos;
 	
@@ -45,28 +43,26 @@ int main(int argc, char *argv[])
 		XNextEvent(display, &event);
 		
 		/* draw or redraw the window */
-		//if (event.type == Expose)
-		{
-			
-			XGetWindowAttributes(display, window, &winInfos);
+		XClearWindow(display,window);
+
+		XGetWindowAttributes(display, window, &winInfos);
         
-			XFillRectangle(
-				display, window, DefaultGC(display, screen), 20, 20, 10, 10);
-			sprintf(buffer, "width=%d",	 winInfos.width);
-			XDrawString(
-				display, window, DefaultGC(display, screen),
-				winInfos.width / 2, 10,
-				buffer, strlen(buffer));
-			sprintf(buffer, "height=%d", winInfos.height);
-			XDrawString(
-				display, window, DefaultGC(display, screen),
-				0, winInfos.height / 2,
-				buffer, strlen(buffer));
-		}
+		XFillRectangle(display, window, DefaultGC(display, screen), 20, 20, 10, 10);
+
+		buffer = "width=" + std::to_string(winInfos.width);
+		XDrawString(
+			display, window, DefaultGC(display, screen),
+			winInfos.width / 2, 10,
+			buffer.data(), buffer.size());
+
+		buffer = "width=" + std::to_string(winInfos.height);
+		XDrawString(
+			display, window, DefaultGC(display, screen),
+			0, winInfos.height / 2,
+			buffer.data(), buffer.size());
 
 		/* exit on key press */
-		if (event.type == KeyPress)
-			break;
+		if (event.type == KeyPress) break;
 	}
 
 	/* close connection to server */
